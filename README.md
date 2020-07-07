@@ -29,7 +29,7 @@ terraform destroy -var-file terraform.tfvars
 ##  Overview
 The following diagram shows the key components of the configuration for this scenario.
 
-![Diagram](..\..\3tierArch.jpg)
+![Diagram](3tierArch.jpeg)
 
 The configuration for this package includes a virtual private cloud (VPC) with a public subnet and a private subnet. This is recommended if you want to run a public-facing web application, while maintaining back-end servers that aren't publicly accessible. All internal traffic is limited to each subnet with only remote administration ports (SSH, RDP) opened between them.  After this package is provisioned, the user must edit the security groups to allow the traffic needed for your solutions to navigate between subnets with your own custom ingress, egress rules. For example, you can set up security and routing so that the web servers can communicate with the database servers.
 
