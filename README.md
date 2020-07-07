@@ -1,7 +1,7 @@
 
 This repository contains a Terraform AWS deployment project that builds [IaaS as Code: Single VPC
 with 3 subnets App, Dev, Web with multiple EC2 instances and load balancers].
-The detailed description on each resource and configuration is found below. This is 
+The detailed description on each resource and configuration is found below. This is
 designed to give a working example which can the basis for most traditional datacenter to cloud migration projects and can be altered to be more
 complex.
 
@@ -55,9 +55,10 @@ A custom route table associated with the public subnet is also created. This rou
 The main route table associated with the private subnet. The route table contains an entry that enables instances in the subnet to communicate with other instances in the VPC over IPv4, and an entry that enables instances in the subnet to communicate with the Internet through the NAT gateway over IPv4.
 
 Routing
+
 In this scenario, the VPC wizard updates the main route table used with the private subnet, and creates a custom route table and associates it with the public subnet.
 
-In this scenario, all traffic from each subnet that is bound for AWS (for example, to the Amazon EC2 or Amazon S3 endpoints) goes over the Internet gateway. The database servers in the private subnet can't receive traffic from the Internet directly because they don't have Elastic IP addresses. However, the database servers can send and receive Internet traffic through the NAT device in the public subnet.
+Additionally, all traffic from each subnet that is bound for AWS (for example, to the Amazon EC2 or Amazon S3 endpoints) goes over the Internet gateway. The database servers in the private subnet can't receive traffic from the Internet directly because they don't have Elastic IP addresses. However, the database servers can send and receive Internet traffic through the NAT device in the public subnet.
 
 Any additional subnets that you create use the main route table by default, which means that they are private subnets by default. If you want to make a subnet public, you can always change the route table that it's associated with.
 
@@ -115,9 +116,56 @@ WebServerSG: Specify this security group when you launch the web servers in the 
 
 DBServerSG: Specify this security group when you launch the database servers in the private subnet.
 
+AppServerSG: Specify this security group when you launch the application servers in the private subnet.
+
 The instances assigned to a security group can be in different subnets. However, in this scenario, each security group corresponds to the type of role an instance plays, and each role requires the instance to be in a particular subnet. Therefore, in this scenario, all instances assigned to a security group are in the same subnet.
 
 The following table describes the recommended rules for the WebServerSG security group, which allow the web servers to receive Internet traffic, as well as SSH and RDP traffic from your network. The web servers can also initiate read and write requests to the database servers in the private subnet, and send traffic to the Internet; for example, to get software updates. Because the web server doesn't initiate any other outbound communication, the default outbound rule is removed.
+
+| Inbound	 |Protocol | Port range | Comments |
+|---|:---:|:---:|:----:|
+|0.0.0.0/0 | TCP | 80 | Allow inbound HTTP access to the web servers from any IPv4 address. |
+|0.0.0.0/0 | TCP |443 | Allow inbound HTTPS access to the web servers from any IPv4 address. |
+|Your home network's public IPv4 address range | TCP | 22 | Allow inbound SSH access to Linux instances from your home network (over the Internet gateway). You can get the public IPv4 address of your local computer using a service such as http://checkip.amazonaws.com or https://checkip.amazonaws.com. If you are connecting through an ISP or from behind your firewall without a static IP address, you need to find out the range of IP addresses used by client computers. |
+| Your home network's public IPv4 address range | TCP | 3389 | Allow inbound RDP access to Windows instances from your home network (over the Internet gateway). |
+
+Outbound
+
+| Destination	 |Protocol | Port range | Comments |
+|---|:---:|:---:|:----:|
+| The ID of your DBServerSG security group | TCP | 1433 | Allow outbound Microsoft SQL Server access to the database servers assigned to the DBServerSG security group. |
+| The ID of your DBServerSG security group | TCP | 3306 | Allow outbound MySQL access to the database servers assigned to the DBServerSG security group. |
+| 0.0.0.0/0 | TCP | 80 | Allow outbound HTTP access to any IPv4 address. |
+| 0.0.0.0/0 | TCP | 443 | Allow outbound HTTPS access to any IPv4 address. |
+
+The following table describes the recommended rules for the DBServerSG security group, which allow read or write database requests from the web servers. The database servers can also initiate traffic bound for the Internet (the route table sends that traffic to the NAT gateway, which then forwards it to the Internet over the Internet gateway).
+
+Inbound
+| Inbound	 |Protocol | Port range | Comments |
+|---|:---:|:---:|:----:|
+|The ID of your WebServerSG security group | TCP | 1433 |Allow inbound Microsoft SQL Server access from the web servers associated with the WebServerSG security group.|
+|The ID of your WebServerSG security group | TCP | 3306 | Allow inbound MySQL Server access from the web servers associated with the WebServerSG security group. |
+
+Outbound
+
+| Destination	 |Protocol | Port range | Comments |
+|---|:---:|:---:|:----:|
+|0.0.0.0/0 | TCP | 80 | Allow outbound HTTP access to the Internet over IPv4 (for example, for software updates). |
+|0.0.0.0/0 | TCP | 443 | Allow outbound HTTPS access to the Internet over IPv4 (for example, for software updates).|
+
+(Optional) The default security group for a VPC has rules that automatically allow assigned instances to communicate with each other. To allow that type of communication for a custom security group, you must add the following rules:
+
+Inbound
+| Inbound	 |Protocol | Port range | Comments |
+|---|:---:|:---:|:----:|
+|The ID of the security group | All | All | Allow inbound traffic from other instances assigned to this security group.|
+
+Outbound
+| Destination	 |Protocol | Port range | Comments |
+|---|:---:|:---:|:----:|
+|The ID of the security group |	All	| All |	Allow outbound traffic to other instances assigned to this security group.|
+
+(Optional) If you launch a bastion host in your public subnet to use as a proxy for SSH or RDP traffic from your home network to your private subnet, add a rule to the DBServerSG security group that allows inbound SSH or RDP traffic from the bastion instance or its associated security group.
 
 # terraform-aws-vpc
 # terraform-aws-ec2
