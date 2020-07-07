@@ -1,17 +1,17 @@
 provider "aws" {
-region = "us-east-2"
-access_key = "AKIARBI7EXCQMTST4QVX"
-secret_key = "XLZ2TVuFls+XE3lgVBD5jK6kSHUHaD48pMXuyELh"
+region = "YOURREGION"
+access_key = "YOURACCESSKEY"
+secret_key = "YOURSECRETKEY"
 }
 
 
 
-resource "aws_vpc" "jmtest" {
+resource "aws_vpc" "YOURVPCNAME" {
   cidr_block        = "127.0.0.0/24"
   enable_dns_support = true
   enable_dns_hostnames = true
   tags = {
-    Name = "My terraform managed vpc"}
+    Name = "New vpc 3 tier stack"}
 }
 
   
