@@ -40,7 +40,7 @@ A VPC with a size /22 IPv4 CIDR block (example: 10.0.0.0/22). This provides 1,02
 
 A public subnet with a size /24 IPv4 CIDR block (example: 10.0.1.0/24). This provides 256 private IPv4 addresses. A public subnet is a subnet that's associated with a route table that has a route to an Internet gateway.
 
-The private subnets with a size /24 IPv4 CIDR block (example: 10.0.2.0/24, 10.0.3.0/24). This provides 256 private IPv4 addresses.
+The private subnets with a size /24 IPv4 CIDR block (example: 10.0.2.0/25 APP Subnet, 10.0.2.128/25 Bastion Subnet, and 10.0.3.0/24 Database Subnet). These provide 256 private IPv4 addresses for each /24 subnet, with the 10.0.2.0 network split to /25.
 
 An Internet gateway. This connects the VPC to the Internet and to other AWS services.
 
@@ -54,7 +54,7 @@ A custom route table associated with the public subnet is also created. This rou
 
 The main route table associated with the private subnet. The route table contains an entry that enables instances in the subnet to communicate with other instances in the VPC over IPv4, and an entry that enables instances in the subnet to communicate with the Internet through the NAT gateway over IPv4.
 
-Routing
+## Routing
 
 In this scenario, the VPC wizard updates the main route table used with the private subnet, and creates a custom route table and associates it with the public subnet.
 
@@ -105,7 +105,7 @@ The second entry is the default route that's automatically added for local routi
 |0.0.0.0/0 | igw-id |
 |::/0 | igw-id |
 
-Security
+## Security
 AWS provides two features that you can use to increase security in your VPC: security groups and network ACLs. Security groups control inbound and outbound traffic for your instances, and network ACLs control inbound and outbound traffic for your subnets. In most cases, security groups can meet your needs; however, you can also use network ACLs if you want an additional layer of security for your VPC. For more information, see Internetwork traffic privacy in Amazon VPC.
 
 For scenario 2, you'll use security groups but not network ACLs. If you'd like to use a network ACL, see Recommended network ACL rules for a VPC with public and private subnets (NAT).
@@ -117,6 +117,8 @@ WebServerSG: Specify this security group when you launch the web servers in the 
 DBServerSG: Specify this security group when you launch the database servers in the private subnet.
 
 AppServerSG: Specify this security group when you launch the application servers in the private subnet.
+
+BastionServerSG: Specify this security group when you launch the bastion servers in the private subnet.
 
 The instances assigned to a security group can be in different subnets. However, in this scenario, each security group corresponds to the type of role an instance plays, and each role requires the instance to be in a particular subnet. Therefore, in this scenario, all instances assigned to a security group are in the same subnet.
 
