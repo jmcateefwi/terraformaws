@@ -1,13 +1,8 @@
-# terraform-aws-vpc
-# terraform-aws-ec2
-# terraform-aws-elb
-# terraform-aws-eip
-# terraform-aws-security_groups
 
 This repository contains a Terraform AWS deployment project that builds [IaaS as Code: Single VPC
-with 3 subnets App, Dev, Web with multiple EC2 instances and load balancers] from the.
-I will setup a more detailed description on how it all works in the near future. It is
-designed to give a working example which can the basis of something much more
+with 3 subnets App, Dev, Web with multiple EC2 instances and load balancers].
+The detailed description on each resource and configuration is found below. This is 
+designed to give a working example which can the basis for most traditional datacenter to cloud migration projects and can be altered to be more
 complex.
 
 ## Usage
@@ -123,6 +118,12 @@ DBServerSG: Specify this security group when you launch the database servers in 
 The instances assigned to a security group can be in different subnets. However, in this scenario, each security group corresponds to the type of role an instance plays, and each role requires the instance to be in a particular subnet. Therefore, in this scenario, all instances assigned to a security group are in the same subnet.
 
 The following table describes the recommended rules for the WebServerSG security group, which allow the web servers to receive Internet traffic, as well as SSH and RDP traffic from your network. The web servers can also initiate read and write requests to the database servers in the private subnet, and send traffic to the Internet; for example, to get software updates. Because the web server doesn't initiate any other outbound communication, the default outbound rule is removed.
+
+# terraform-aws-vpc
+# terraform-aws-ec2
+# terraform-aws-elb
+# terraform-aws-eip
+# terraform-aws-security_groups
 
 Note
 
