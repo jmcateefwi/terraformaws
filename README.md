@@ -79,14 +79,10 @@ The first entry is the default entry for local routing in the VPC; this entry en
 Custom route table
 The first entry is the default entry for local routing in the VPC; this entry enables the instances in this VPC to communicate with each other. The second entry routes all other subnet traffic to the Internet over the Internet gateway (for example, igw-1a2b3d4d).
 
-Destination	Target
-10.0.0.0/16
-
-local
-
-0.0.0.0/0
-
-igw-id
+| Destination	 |Target |
+|---|:---:|
+|10.0.0.0/16 | local |
+|0.0.0.0/0 | igw-id |
 
 Routing for IPv6
 If you associate an IPv6 CIDR block with your VPC and subnets, your route tables must include separate routes for IPv6 traffic. The following tables show the route tables for this scenario if you choose to enable IPv6 communication in your VPC.
@@ -95,42 +91,24 @@ Main route table
 
 The second entry is the default route that's automatically added for local routing in the VPC over IPv6. The fourth entry routes all other IPv6 subnet traffic to the egress-only Internet gateway.
 
-Destination	Target
-10.0.0.0/16
+| Destination	 |Target |
+|---|:---:|
+|10.0.0.0/16 | local |
+|2001:db8:1234:1a00::/56| local |
+|0.0.0.0/0 | nat-gateway-id |
+|::/0 | egress-only-igw-id |
 
-local
-
-2001:db8:1234:1a00::/56
-
-local
-
-0.0.0.0/0
-
-nat-gateway-id
-
-::/0
-
-egress-only-igw-id
 Custom route table
 
 The second entry is the default route that's automatically added for local routing in the VPC over IPv6. The fourth entry routes all other IPv6 subnet traffic to the Internet gateway.
 
-Destination	Target
-10.0.0.0/16
+| Destination	 |Target |
+|---|:---:|
+|10.0.0.0/16 | local |
+|2001:db8:1234:1a00::/56 | local |
+|0.0.0.0/0 | igw-id |
+|::/0 | igw-id |
 
-local
-
-2001:db8:1234:1a00::/56
-
-local
-
-0.0.0.0/0
-
-igw-id
-
-::/0
-
-igw-id
 Security
 AWS provides two features that you can use to increase security in your VPC: security groups and network ACLs. Security groups control inbound and outbound traffic for your instances, and network ACLs control inbound and outbound traffic for your subnets. In most cases, security groups can meet your needs; however, you can also use network ACLs if you want an additional layer of security for your VPC. For more information, see Internetwork traffic privacy in Amazon VPC.
 
@@ -147,9 +125,6 @@ The instances assigned to a security group can be in different subnets. However,
 The following table describes the recommended rules for the WebServerSG security group, which allow the web servers to receive Internet traffic, as well as SSH and RDP traffic from your network. The web servers can also initiate read and write requests to the database servers in the private subnet, and send traffic to the Internet; for example, to get software updates. Because the web server doesn't initiate any other outbound communication, the default outbound rule is removed.
 
 Note
-
-
-
 
 
 [Terraform]: http://terraform.io
